@@ -1,0 +1,6 @@
+out/
+out*/
+exports/
+.DS_Store
+.playwright-mcp/
+Claude outputs/

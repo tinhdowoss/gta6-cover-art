@@ -1,23 +1,101 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
-<link rel="stylesheet" href="./style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunset State Cover Studio — multi-panel poster maker</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
-  </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
-</main>
-<script type="module" src="./src/main.js"></script>
+  <header class="studio-topbar">
+    <div class="brand-mark"><span class="brand-sun"></span><b>SUNSET STATE</b><i>Cover Studio</i></div>
+    <ol class="quick-steps" id="quickSteps">
+      <li><b>1</b> Add photos</li>
+      <li><b>2</b> Pick a size</li>
+      <li><b>3</b> Export PNG</li>
+    </ol>
+    <div class="topbar-actions">
+      <label class="btn btn-primary" id="addPhotosButton" for="photoFileInput">＋ Add photos</label>
+      <button class="btn btn-hot" id="exportAllSizesButton" type="button">⬇ Export all 3 sizes</button>
+    </div>
+    <input id="photoFileInput" type="file" accept="image/*" multiple hidden>
+    <input id="panelFileInput" type="file" accept="image/*" hidden>
+  </header>
+
+  <main class="studio-grid">
+    <aside class="rail rail-left">
+      <section class="rail-section" id="photoTraySection">
+        <h2>Photos <small id="photoCount">0 loaded</small></h2>
+        <div class="photo-drop-zone" id="photoDropZone">
+          <p><b>Drop photos here</b> or use <em>Add photos</em>. One photo fills every panel with different crops; several are spread across panels.</p>
+        </div>
+        <div class="photo-tray" id="photoTray" aria-label="Loaded photos: click to put one in the selected panel"></div>
+      </section>
+
+      <section class="rail-section" id="panelInspector">
+        <h2>Panel <small id="selectedPanelLabel">1</small></h2>
+        <div class="panel-chips" id="panelChips"></div>
+        <label class="slider-row">Zoom <input id="panelZoomSlider" type="range" min="1" max="5" step="0.01" value="1"><output id="panelZoomValue">1.0×</output></label>
+        <div class="button-row">
+          <button class="btn btn-small" id="autoCenterCropButton" type="button">Auto center crop</button>
+          <button class="btn btn-small" id="replacePanelPhotoButton" type="button">Replace photo…</button>
+        </div>
+        <button class="btn btn-small btn-wide" id="fillAllFromPhotoButton" type="button">Fill all panels from this photo</button>
+        <button class="btn btn-small btn-wide" id="spreadPhotosButton" type="button">Spread all photos across panels</button>
+        <p class="hint">Drag a panel in the preview to pan · scroll to zoom · double-click to re-center · drop a photo on a panel to replace it.</p>
+      </section>
+    </aside>
+
+    <section class="stage" id="previewStage">
+      <nav class="size-tabs" id="sizeTabs" aria-label="Output size"></nav>
+      <div class="preview-frame" id="previewFrame">
+        <canvas id="coverPreviewCanvas" aria-label="Live cover preview"></canvas>
+      </div>
+      <div class="export-bar">
+        <button class="btn btn-primary" id="exportPngButton" type="button">⬇ Export PNG</button>
+        <button class="btn btn-hot" id="exportAllSizesButtonBottom" type="button">⬇ Export all 3 sizes</button>
+        <span class="export-status" id="exportStatus" role="status">Live preview · exports at full resolution</span>
+      </div>
+    </section>
+
+    <aside class="rail rail-right">
+      <section class="rail-section">
+        <h2>Layout</h2>
+        <div class="layout-picker" id="layoutPicker"></div>
+      </section>
+
+      <section class="rail-section">
+        <h2>Grade</h2>
+        <div class="grade-picker" id="gradePicker"></div>
+        <label class="slider-row">Strength <input id="gradeStrengthSlider" type="range" min="0" max="1" step="0.01"><output></output></label>
+        <label class="slider-row">Contrast <input id="gradeContrastSlider" type="range" min="-0.5" max="0.6" step="0.01"><output></output></label>
+        <label class="slider-row">Saturation <input id="gradeSaturationSlider" type="range" min="-0.8" max="0.8" step="0.01"><output></output></label>
+        <label class="slider-row">Grain <input id="grainSlider" type="range" min="0" max="1" step="0.01"><output></output></label>
+        <label class="slider-row">Vignette <input id="vignetteSlider" type="range" min="0" max="1" step="0.01"><output></output></label>
+        <label class="check-row"><input id="halftoneToggle" type="checkbox"> Halftone print dots</label>
+      </section>
+
+      <section class="rail-section">
+        <h2>Caption</h2>
+        <label class="field">Title <textarea id="captionTitleInput" rows="2" maxlength="40" spellcheck="false"></textarea></label>
+        <label class="field">Subtitle <input id="captionSubtitleInput" type="text" maxlength="40" spellcheck="false"></label>
+        <label class="field">Tagline <input id="captionTaglineInput" type="text" maxlength="60" spellcheck="false"></label>
+      </section>
+
+      <section class="rail-section">
+        <h2>Lettering</h2>
+        <div class="fill-picker" id="letteringFillPicker"></div>
+        <label class="slider-row">Tilt <input id="letteringTiltSlider" type="range" min="-12" max="12" step="0.5"><output></output></label>
+        <label class="field">Subtitle style <select id="subtitleStyleSelect"><option value="script">Neon script</option><option value="ribbon">Caps ribbon</option></select></label>
+        <label class="check-row"><input id="originalBadgeToggle" type="checkbox"> Starburst badge</label>
+        <label class="field">Badge text <input id="badgeTextInput" type="text" maxlength="12" spellcheck="false"></label>
+        <label class="check-row"><input id="posterExtrasToggle" type="checkbox"> Poster extras: stars, monogram, barcode, credits</label>
+      </section>
+    </aside>
+  </main>
+
+  <div class="drop-overlay" id="dropOverlay"><p>Drop photos to fill the panels</p></div>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

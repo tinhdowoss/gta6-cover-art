@@ -1,5 +1,6 @@
 [
-  { "name": "1-cover.jpg", "query": "?shot=cover&photo=pier&caption=Sunset%20Heist", "w": 1080, "h": 1080 },
-  { "name": "2-editor.jpg", "query": "?shot=editor&photo=boulevard&caption=Boulevard%20Queen", "w": 1280, "h": 720 },
-  { "name": "3-cover.jpg", "query": "?shot=cover&photo=boulevard&caption=Boulevard%20Queen", "w": 1080, "h": 1080 }
+  { "name": "01-cover-1920x1080.jpg", "how": "Export PNG 1920x1080 with the default preset (Hero collage, Vice Sunset, cream lettering), 6 sample photos loaded; scaled to 1280x720", "w": 1280, "h": 720 },
+  { "name": "02-editor-photo-loaded.jpg", "how": "The editor in Chrome at 1280x800 with 6 photos loaded, panel 1 selected, live preview", "w": 1280, "h": 800 },
+  { "name": "03-cover-1080x1350.jpg", "how": "Export PNG 1080x1350: 9-panel mosaic, Comic Ink grade, caption HEAT WAVE / Coast to Coast; scaled to 1024x1280", "w": 1024, "h": 1280 },
+  { "name": "04-cover-1080x1080.jpg", "how": "Export PNG 1080x1080: Comic page collage with title tile, Neon Night grade, neon lettering, caption NIGHT DRIVE", "w": 1080, "h": 1080 }
 ]
